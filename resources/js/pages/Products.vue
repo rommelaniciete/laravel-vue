@@ -22,7 +22,7 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { store } from '@/routes/products';
 import { Head, useForm } from '@inertiajs/vue3';
-import { FilePenLine,Trash } from 'lucide-vue-next';
+import { FilePenLine, Trash } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -64,7 +64,6 @@ const handleFile = (event: Event) => {
 
     form.product_image_url = target.files[0];
 };
-
 </script>
 
 <template>
@@ -157,7 +156,7 @@ const handleFile = (event: Event) => {
             </div>
 
             <ItemGroup
-                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 m-3"
+                class="m-3 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Item
                     v-for="product in products"
@@ -174,8 +173,14 @@ const handleFile = (event: Event) => {
                             <div
                                 class="h-44 w-full overflow-hidden bg-slate-100 sm:h-40 md:h-48"
                             >
-                                <img :src="product.product_image_url || 'https://via.placeholder.com/150'" :alt="product.product_name" class="h-full w-full object-cover" />
-
+                                <img
+                                    :src="
+                                        product.product_image_url ||
+                                        'https://via.placeholder.com/150'
+                                    "
+                                    :alt="product.product_name"
+                                    class="h-full w-full object-cover"
+                                />
                             </div>
                         </ItemHeader>
                         <ItemContent>
@@ -186,9 +191,7 @@ const handleFile = (event: Event) => {
                                     <ItemTitle class="text-lg">{{
                                         product.product_name
                                     }}</ItemTitle>
-                                    <ItemDescription
-                                        class="text-sm"
-                                    >
+                                    <ItemDescription class="text-sm">
                                         {{ product.product_description }}
                                     </ItemDescription>
                                     <p class="mt-2 text-lg font-semibold">
@@ -199,7 +202,7 @@ const handleFile = (event: Event) => {
                                 <!-- Buttons -->
                                 <div class="mt-2 flex justify-between gap-2">
                                     <Button
-                                    size="sm"
+                                        size="sm"
                                         variant="default"
                                         class="flex items-center gap-2"
                                     >
@@ -208,7 +211,6 @@ const handleFile = (event: Event) => {
                                     <Button size="sm" variant="destructive">
                                         <Trash class="h-4 w-4" /> Delete
                                     </Button>
-                                    
                                 </div>
                             </div>
                         </ItemContent>

@@ -36,7 +36,7 @@ import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import type { InertiaLinkProps } from '@inertiajs/vue3';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Menu, Search, Unlink } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface Props {
@@ -69,6 +69,11 @@ const mainNavItems: NavItem[] = [
         title: 'Products',
         href: '/products',
         icon: ShoppingCart,
+    },
+    {
+        title: 'Posting',
+        href: '/postings',
+        icon: Unlink,
     },
 ];
 
