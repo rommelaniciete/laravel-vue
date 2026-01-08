@@ -67,6 +67,8 @@ const handleFile = (event: Event) => {
     form.product_image_url = target.files[0];
 };
 
+//try if dagdag
+
 // const deleteProduct = (productId: number) => {
 //     // if (!confirm('Are you sure you want to delete this product?')) {
 //     //     return;
