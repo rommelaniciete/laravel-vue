@@ -51,8 +51,6 @@ const submit = () => {
             toast.success('Product created successfully!');
             form.reset();
             open.value = false;
-            // Optionally refresh the page to show new product
-            window.location.reload();
         },
         onError: () => {
             toast.error('Failed to create product. Please check the form.');
@@ -67,23 +65,6 @@ const handleFile = (event: Event) => {
     form.product_image_url = target.files[0];
 };
 
-
-// const deleteProduct = (productId: number) => {
-//     // if (!confirm('Are you sure you want to delete this product?')) {
-//     //     return;
-//     // }
-
-//     store
-//         .destroy(productId)
-//         .then(() => {
-//             toast.success('Product deleted successfully!');
-//             // Optionally refresh the page to reflect deletion
-//             window.location.reload();
-//         })
-//         .catch(() => {
-//             toast.error('Failed to delete product.');
-//         });
-// };
 </script>
 
 <template>
