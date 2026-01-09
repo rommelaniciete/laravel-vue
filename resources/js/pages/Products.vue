@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProductController from '@/actions/App/Http/Controllers/ProductController';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -46,7 +47,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(store.url(), {
+    form.post(ProductController.store.url(), {
         onSuccess: () => {
             toast.success('Product created successfully!');
             form.reset();
@@ -54,6 +55,9 @@ const submit = () => {
         },
         onError: () => {
             toast.error('Failed to create product. Please check the form.');
+            toast.warning(
+                'Make sure all fields are filled out correctly.'
+            );
         },
     });
 };

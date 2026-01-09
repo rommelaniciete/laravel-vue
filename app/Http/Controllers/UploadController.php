@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+use App\Models\Upload;
 use App\Http\Requests\StoreUploadRequest;
 use App\Http\Requests\UpdateUploadRequest;
-use App\Models\Upload;
 
 class UploadController extends Controller
 {
@@ -13,7 +14,7 @@ class UploadController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Uploads');
     }
 
     /**

@@ -36,7 +36,7 @@ import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import type { InertiaLinkProps } from '@inertiajs/vue3';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search, Unlink } from 'lucide-vue-next';
+import { BookOpen, CloudUpload, Facebook, Folder, LayoutGrid, Menu, Search, Unlink } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface Props {
@@ -75,18 +75,23 @@ const mainNavItems: NavItem[] = [
         href: '/postings',
         icon: Unlink,
     },
+    {
+        title: 'File Uploads',
+        href: '/upload',
+        icon: CloudUpload,
+    },
 ];
 
 const rightNavItems: NavItem[] = [
     {
         title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://github.com/rommelaniciete/new-app',
         icon: Folder,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'Facebook',
+        href: 'https://facebook.com/Rommel',
+        icon: Facebook,
     },
 ];
 </script>
@@ -203,9 +208,6 @@ const rightNavItems: NavItem[] = [
                             size="icon"
                             class="group h-9 w-9 cursor-pointer"
                         >
-                            <Search
-                                class="size-5 opacity-80 group-hover:opacity-100"
-                            />
                         </Button>
 
                         <div class="hidden space-x-1 lg:flex">
