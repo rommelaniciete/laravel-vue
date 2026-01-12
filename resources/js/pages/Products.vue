@@ -21,7 +21,6 @@ import {
     ItemTitle,
 } from '@/components/ui/item';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { store } from '@/routes/products';
 import { Head, useForm } from '@inertiajs/vue3';
 import { FilePenLine, Trash } from 'lucide-vue-next';
 import { ref } from 'vue';

@@ -30,7 +30,30 @@ class UploadController extends Controller
      */
     public function store(StoreUploadRequest $request)
     {
-        //
+        // if ($request->type === 'file' && $request->hasFile('file')) {
+        //     $file = $request->file('file');
+        //     $path = $file->store('uploads');
+
+        //     $upload = Upload::create([
+        //         'name' => $request->name,
+        //         'type' => 'file',
+        //         'path' => $path,
+        //         'size' => $file->getSize(),
+        //         'mime_type' => $file->getMimeType(),
+        //         'user_id' => auth()->id(),
+        //         'parent_id' => $request->parent_id,
+        //     ]);
+        // } else {
+        //     $upload = Upload::create([
+        //         'name' => $request->name,
+        //         'type' => 'folder',
+        //         'user_id' => auth()->id(),
+        //         'parent_id' => $request->parent_id,
+        //     ]);
+        // }
+
+        dd($request->all());
+        // return back();
     }
 
     /**

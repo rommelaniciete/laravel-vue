@@ -26,6 +26,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+    
+     Route::prefix('upload')->group(function () {
+        Route::get('/', [UploadController::class, 'index'])->name('upload.index');
+        Route::post('/', [UploadController::class, 'store'])->name('upload.store');
+    });
 
 
     // Route::prefix('task')->group(function () {
@@ -35,15 +40,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //     // Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('task.edit');
 
     // });
-
-    Route::prefix('upload')->group(function () {
-
-        Route::get('/', [UploadController::class, 'index'])->name('upload.index');
-
-        Route::post('/', [UploadController::class, 'store'])->name('upload.store');
-
-        Route::delete('/', [UploadController::class, 'destroy'])->name('upload.destroy');
-    });
 });
 
 

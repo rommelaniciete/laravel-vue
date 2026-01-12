@@ -11,7 +11,7 @@ class StoreUploadRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreUploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:file,folder',
+            'file' => 'nullable|file|max:10240',
+            'parent_id' => 'nullable|exists:uploads,id',
         ];
     }
 }
