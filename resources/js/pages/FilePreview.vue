@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 
-import { router } from '@inertiajs/vue3';
-
 interface Upload {
     id: number;
     name: string;
@@ -14,9 +12,7 @@ const props = defineProps<{
     upload: Upload;
     fileUrl: string;
 }>();
-
 </script>
-
 
 <template>
     <AppLayout>
@@ -28,7 +24,7 @@ const props = defineProps<{
 
             <!-- Preview content centered -->
             <div
-                class="flex min-h-[60vh] items-center justify-center rounded-lg bg p-4"
+                class="bg flex min-h-[60vh] items-center justify-center rounded-lg p-4"
             >
                 <div class="w-full">
                     <img

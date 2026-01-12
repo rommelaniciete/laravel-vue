@@ -76,10 +76,13 @@ const submit = () => {
     form.post(upload.store.url(), {
         onSuccess: () => {
             form.reset();
-            form.parent_id = currentFolderId.value;
+            form.parent_id = currentFolderId.value
+            DialogOpen.value = (false);
         },
     });
 };
+
+const DialogOpen = ref(false);
 
 function handleFile(event: Event) {
   const target = event.target as HTMLInputElement
@@ -162,6 +165,8 @@ function deleteUpload() {
     });
 }
 
+
+
 </script>
 
 
@@ -171,8 +176,8 @@ function deleteUpload() {
     <AppLayout>
     <div class="flex h-[calc(100vh-64px)] py-10">
         <!-- Sidebar -->
-        <aside class="w-64 space-y-4 px-4 py-6">
-            <Dialog>
+        <aside class="w-64 space-y-4 px-4 py-6 border-r">
+            <Dialog v-model:open="DialogOpen">
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button
@@ -297,13 +302,12 @@ function deleteUpload() {
                                 >
                                       {{ upload.name }}
                                 </button>
-                                <!-- <button 
+                                <button 
                                     v-else
                                     @click="viewFile(upload)"
                                 >
                                      {{ upload.name }}
-                                </button> -->
-                                {{ upload.name }}
+                                </button>
                             </TableCell>
                             <TableCell>{{ formatDate(upload.updated_at) }}</TableCell>
                             <TableCell>{{ upload.type === 'file' ? formatFileSize(upload.size) : '-' }}</TableCell>
