@@ -11,7 +11,7 @@ class UpdateUploadRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,8 +22,7 @@ class UpdateUploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'name' => 'required|string|max:255',
-            // 'file' => 'nullable|file|mimes:jpg,png,pdf|max:2048'
+            'name' => 'required|string|max:255',
         ];
     }
 }

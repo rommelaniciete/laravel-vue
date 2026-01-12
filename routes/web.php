@@ -27,10 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
     
-     Route::prefix('upload')->group(function () {
-        Route::get('/', [UploadController::class, 'index'])->name('upload.index');
-        Route::post('/', [UploadController::class, 'store'])->name('upload.store');
-    });
+    Route::resource('upload', UploadController::class);
 
 
     // Route::prefix('task')->group(function () {

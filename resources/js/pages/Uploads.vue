@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
 import {
     DropdownMenu,
@@ -29,21 +30,53 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { useForm } from '@inertiajs/vue3';
-import UploadController from '@/actions/App/Http/Controllers/UploadController';
-import { Skeleton } from '@/components/ui/skeleton';
 import upload from '@/routes/upload';
+
+interface Upload {
+    id: number;
+    name: string;
+    type: 'file' | 'folder';
+    path?: string;
+    size?: number;
+    mime_type?: string;
+    user_id: number;
+    parent_id?: number;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Props {
+    uploads: Upload[];
+    currentFolder?: Upload;
+    breadcrumbs: Upload[];
+}
+
+const props = defineProps<Props>();
+
+const currentFolderId = ref(props.currentFolder?.id || null);
+
+const editDialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const editingUpload = ref<Upload | null>(null);
+const deletingUpload = ref<Upload | null>(null);
+
+const editForm = useForm({
+    name: ''
+});
 
 const form = useForm({
     name: '',
     type: 'folder',
     file: null as File | null,
-    parent_id: ''
+    parent_id: currentFolderId.value
 });
 
 const submit = () => {
+    form.parent_id = currentFolderId.value;
     form.post(upload.store.url(), {
         onSuccess: () => {
             form.reset();
+            form.parent_id = currentFolderId.value;
         },
     });
 };
@@ -53,6 +86,80 @@ function handleFile(event: Event) {
   if (target.files && target.files.length > 0) {
     form.file = target.files[0]
   }
+}
+
+function formatFileSize(bytes?: number): string {
+    if (!bytes) return '-';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (bytes === 0) return '0 Bytes';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+function formatDate(date: string): string {
+    return new Date(date).toLocaleDateString();
+}
+
+function navigateToFolder(folder: Upload) {
+    router.get('/upload', { folder: folder.id });
+}
+
+function goToFolder(folderId: number | null) {
+    if (folderId === null) {
+        router.get('/upload');
+    } else {
+        router.get('/upload', { folder: folderId });
+    }
+}
+
+const filteredUploads = computed(() => {
+    return props.uploads.filter(upload => upload.parent_id === currentFolderId.value);
+});
+
+function viewFile(upload: Upload) {
+    window.open(`/upload/${upload.id}`, '_blank');
+}
+
+function openEditDialog(upload: Upload) {
+    editingUpload.value = upload;
+    editForm.name = upload.name;
+    editDialogOpen.value = true;
+}
+
+function closeEditDialog() {
+    editDialogOpen.value = false;
+    editingUpload.value = null;
+    editForm.reset();
+}
+
+function updateUpload() {
+    if (!editingUpload.value) return;
+
+    editForm.put(`/upload/${editingUpload.value.id}`, {
+        onSuccess: () => {
+            closeEditDialog();
+        },
+    });
+}
+
+function openDeleteDialog(upload: Upload) {
+    deletingUpload.value = upload;
+    deleteDialogOpen.value = true;
+}
+
+function closeDeleteDialog() {
+    deleteDialogOpen.value = false;
+    deletingUpload.value = null;
+}
+
+function deleteUpload() {
+    if (!deletingUpload.value) return;
+
+    router.delete(`/upload/${deletingUpload.value.id}`, {
+        onSuccess: () => {
+            closeDeleteDialog();
+        },
+    });
 }
 
 </script>
@@ -113,35 +220,124 @@ function handleFile(event: Event) {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <!-- Edit Dialog -->
+            <Dialog v-model:open="editDialogOpen">
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit {{ editingUpload?.type === 'folder' ? 'Folder' : 'File' }}</DialogTitle>
+                    </DialogHeader>
+
+                    <form @submit.prevent="updateUpload" class="space-y-3">
+                        <Input v-model="editForm.name" placeholder="Name" />
+
+                        <DialogFooter>
+                            <DialogClose>
+                                <Button variant="ghost" @click="closeEditDialog">Cancel</Button>
+                            </DialogClose>
+                            <Button type="submit">Update</Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Delete Dialog -->
+            <Dialog v-model:open="deleteDialogOpen">
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete {{ deletingUpload?.type === 'folder' ? 'Folder' : 'File' }}</DialogTitle>
+                    </DialogHeader>
+
+                    <p class="text-sm text-muted-foreground">
+                        Are you sure you want to delete "{{ deletingUpload?.name }}"?
+                        {{ deletingUpload?.type === 'folder' ? 'This will also delete all contents inside this folder.' : '' }}
+                        This action cannot be undone.
+                    </p>
+
+                    <DialogFooter>
+                        <DialogClose>
+                            <Button variant="ghost" @click="closeDeleteDialog">Cancel</Button>
+                        </DialogClose>
+                        <Button @click="deleteUpload" variant="destructive">Delete</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-1 space-y-4 p-6">
+            <!-- Breadcrumbs -->
+            <div class="flex items-center space-x-2 text-sm text-muted-foreground">
+                <button @click="goToFolder(null)" class="hover:text-foreground">My Drive</button>
+                <span v-for="(crumb, index) in props.breadcrumbs" :key="crumb.id" class="flex items-center">
+                    <span class="mx-2">/</span>
+                    <button @click="goToFolder(crumb.id)" class="hover:text-foreground">{{ crumb.name }}</button>
+                </span>
+            </div>
+
             <!-- File Table -->
             <div class="rounded-lg border">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead>Owner</TableHead>
                             <TableHead>Last Modified</TableHead>
                             <TableHead>Size</TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
                     <TableBody>
-                        <TableRow>
-                            <TableCell><Skeleton class="h-4 w-[100px]" /></TableCell>
-                            <TableCell><Skeleton class="h-4 w-[200px]" /></TableCell>                                     
-                            <TableCell><Skeleton class="h-4 w-[100px]" /></TableCell>
-                            <TableCell><Skeleton class="h-4 w-[200px]" /></TableCell>
+                        <TableRow v-for="upload in filteredUploads" :key="upload.id">
+                            <TableCell>
+                                <button 
+                                    v-if="upload.type === 'folder'"
+                                    @click="navigateToFolder(upload)"
+                                    class="text- hover:text-blue-800 font-medium"
+                                >
+                                      {{ upload.name }}
+                                </button>
+                                <!-- <button 
+                                    v-else
+                                    @click="viewFile(upload)"
+                                >
+                                     {{ upload.name }}
+                                </button> -->
+                                {{ upload.name }}
+                            </TableCell>
+                            <TableCell>{{ formatDate(upload.updated_at) }}</TableCell>
+                            <TableCell>{{ upload.type === 'file' ? formatFileSize(upload.size) : '-' }}</TableCell>
+                            <TableCell>
+                                <div class="flex space-x-2">
+                                    <Button 
+                                        v-if="upload.type === 'file'"
+                                        @click="viewFile(upload)" 
+                                        variant="outline" 
+                                        size="sm"
+                                    >
+                                        View
+                                    </Button>
+                                    <Button 
+                                        @click="openEditDialog(upload)" 
+                                        variant="outline" 
+                                        size="sm"
+                                    >
+                                        Edit
+                                    </Button>
+                                    <Button 
+                                        @click="openDeleteDialog(upload)" 
+                                        variant="destructive" 
+                                        size="sm"
+                                    >
+                                        Delete
+                                    </Button>
+                                </div>
+                            </TableCell>
                         </TableRow>
-
-                        <TableRow>
-                            <TableCell> <Skeleton class="h-4 w-[200px]" /> </TableCell>
-                            <TableCell><Skeleton class="h-4 w-[100px]" /></TableCell>
-                            <TableCell><Skeleton class="h-4 w-[200px]" /></TableCell>
-                            <TableCell><Skeleton class="h-4 w-[100px]" /></TableCell>
+                        <TableRow v-if="filteredUploads.length === 0">
+                            <TableCell colspan="4" class="text-center text-muted-foreground">
+                                No items in this folder. Create your first folder or upload a file.
+                            </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
